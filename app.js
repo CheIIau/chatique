@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const app = express();
 const path = require("path");
-const port = process.env.port || '3000';
+const port = process.env.PORT || 3000;
 app.set('port', port);
 const server = app.listen(port, () => {
     console.log(`server is running on port ${port}`);
