@@ -1,11 +1,22 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+  <v-app id="app">
+    <v-card>
+      <v-toolbar color="green"
+                 flat
+                 tile
+                 elevation="0">
+        <v-toolbar-title>Чатик</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-switch v-model="$vuetify.theme.dark"
+                  inset
+                  hide-details
+                  color="indigo darken-3"
+                  flat
+                  label="Темная тема"></v-switch>
+      </v-toolbar>
+    </v-card>
     <router-view />
-  </div>
+  </v-app>
 </template>
 
 <style>

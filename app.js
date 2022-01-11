@@ -1,0 +1,46 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference types="node" />
+const express = require("express");
+const app = express();
+const path = require("path");
+const port = process.env.port || '3000';
+app.set('port', port);
+const server = app.listen(port, () => {
+    console.log(`server is running on port ${port}`);
+});
+const socket_io_1 = require("socket.io");
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'dist')));
+    app.get('*', (req, res) => {
+        res.sendFile(__dirname + '/dist/index.html');
+    });
+}
+app.use(express.static(path.join(__dirname, 'dist')));
+const io = new socket_io_1.Server(server);
+io.on('connection', (socket) => {
+    if (io.engine.clientsCount !== (null || undefined)) {
+        socket.emit('connections', io.engine.clientsCount);
+    }
+    socket.on('disconnect', () => {
+        socket.broadcast.emit('connections', io.engine.clientsCount);
+        console.log('A user disconnected');
+    });
+    socket.on('chat-message', (data) => {
+        socket.broadcast.emit('chat-message', data);
+    });
+    socket.on('typing', (username) => {
+        socket.broadcast.emit('typing', username);
+    });
+    socket.on('stopTyping', () => {
+        socket.broadcast.emit('stopTyping');
+    });
+    socket.on('joined', (username) => {
+        socket.broadcast.emit('joined', username);
+        socket.broadcast.emit('connections', io.engine.clientsCount);
+    });
+    socket.on('leave', (username) => {
+        socket.broadcast.emit('leave', username);
+    });
+});
+//# sourceMappingURL=app.js.map
