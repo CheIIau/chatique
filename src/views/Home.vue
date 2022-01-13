@@ -170,7 +170,6 @@ export default Vue.extend({
           }
           this.messages.push(message);
         });
-        console.log(this.messages);
       } catch (error: any) {
         console.error(error.message);
       }
