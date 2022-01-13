@@ -151,10 +151,13 @@ export default Vue.extend({
     try {
       const response = await fetch('/messages', {
         method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
       });
-      const mes = await response.text();
-      console.log(mes);
-      // this.messages.push(...mes);
+      const mes = await response.json();
+      this.messages.push(...mes);
     } catch (error: any) {
       console.error(error.message);
     }
