@@ -17,6 +17,8 @@ const server = app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });
 
+app.use('/messages', router);
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')));
   app.get('*', (req: unknown, res: any) => {
@@ -24,8 +26,6 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 app.use(express.static(path.join(__dirname, 'dist')));
-
-app.use('/messages', router);
 
 async function start() {
   try {
