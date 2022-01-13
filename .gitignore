@@ -23,4 +23,5 @@ pnpm-debug.log*
 *.sw?
 
 #js files
+*.js
 *.js*
