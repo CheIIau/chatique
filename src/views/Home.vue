@@ -101,7 +101,7 @@ export default Vue.extend({
       value ? this.socket.emit('typing', this.username as string) : this.socket.emit('stopTyping');
     },
   },
-  async created() {
+  created() {
     this.socket.connect();
     this.socket.on('connections', (count: number) => {
       this.connections = count;
@@ -148,24 +148,32 @@ export default Vue.extend({
     window.onbeforeunload = () => {
       this.socket.emit('leave', this.username);
     };
-    try {
-      const response = await fetch('/messages', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      const mes = await response.json();
-      this.messages.push(...mes);
-    } catch (error: any) {
-      console.error(error.message);
-    }
   },
   methods: {
-    addUser() {
+    async addUser() {
       this.ready = true;
       this.socket.emit('joined', this.username);
+
+      try {
+        const response = await fetch('/messages', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const messagesFromDB = await response.json();
+        messagesFromDB.forEach((message: Message) => {
+          if (message.username === this.username) {
+            message.isYou = true;
+          } else {
+            message.isYou = false;
+          }
+          this.messages.push(message);
+        });
+        console.log(this.messages);
+      } catch (error: any) {
+        console.error(error.message);
+      }
     },
     async send() {
       const message = this.newMessage;

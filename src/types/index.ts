@@ -1,6 +1,6 @@
 export interface Message {
   body: string;
-  isYou: boolean;
+  isYou?: boolean;
   username: string;
 }
 export type MessageArray = Array<Message>;
