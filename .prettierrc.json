@@ -6,9 +6,6 @@
   "trailingComma": "all",
   "bracketSpacing": true,
   "jsxBracketSameLine": false,
-  "parser": "flow",
   "semi": true,
-  "wrapAttributes": true,
-  "sortAttributes": true,
   "endOfLine": "auto"
 }

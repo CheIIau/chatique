@@ -2,15 +2,20 @@
 import express = require('express');
 const app = express();
 import path = require('path');
+import { Server, Socket } from 'socket.io';
+import { router } from './router';
+import { connect } from 'mongoose';
+import { mongoUri } from './constants';
 
 const port = process.env.PORT || 3000;
 app.set('port', port);
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const server = app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });
-
-import { Server, Socket } from "socket.io";
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')));
@@ -18,8 +23,20 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(__dirname + '/dist/index.html');
   });
 }
-
 app.use(express.static(path.join(__dirname, 'dist')));
+
+app.use('/messages', router);
+
+async function start() {
+  try {
+    await connect(mongoUri);
+  } catch (e: any) {
+    console.log('Server Error', e.message);
+    process.exit(1);
+  }
+}
+
+start();
 
 const io = new Server(server);
 io.on('connection', (socket: Socket) => {
@@ -32,7 +49,7 @@ io.on('connection', (socket: Socket) => {
     console.log('A user disconnected');
   });
 
-  socket.on('chat-message', (data: { body: string, isYou:boolean, username: string }) => {
+  socket.on('chat-message', (data: { body: string; isYou: boolean; username: string }) => {
     socket.broadcast.emit('chat-message', data);
   });
 

@@ -4,12 +4,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const app = express();
 const path = require("path");
+const socket_io_1 = require("socket.io");
+const router_1 = require("./router");
+const mongoose_1 = require("mongoose");
+const constants_1 = require("./constants");
 const port = process.env.PORT || 3000;
 app.set('port', port);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const server = app.listen(port, () => {
     console.log(`server is running on port ${port}`);
 });
-const socket_io_1 = require("socket.io");
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'dist')));
     app.get('*', (req, res) => {
@@ -17,6 +22,17 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 app.use(express.static(path.join(__dirname, 'dist')));
+app.use('/messages', router_1.router);
+async function start() {
+    try {
+        await mongoose_1.connect(constants_1.mongoUri);
+    }
+    catch (e) {
+        console.log('Server Error', e.message);
+        process.exit(1);
+    }
+}
+start();
 const io = new socket_io_1.Server(server);
 io.on('connection', (socket) => {
     if (io.engine.clientsCount !== (null || undefined)) {

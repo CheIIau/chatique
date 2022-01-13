@@ -23,24 +23,21 @@
         </v-form>
       </div>
       <h2 v-else>Ваше имя: {{username}}</h2>
-
-      <v-card v-if="ready">
-        <v-card-text class="text-end">
-          Людей онлайн: {{connections}}
-        </v-card-text>
-        <small v-if="typing"
-               class="text-white">{{typing}} is typing</small>
-        <div v-for="message in messages"
-             :key="message"
-             class="message"
-             :class="{message__own: message.isYou === true}">
-          <p class="content message"
-             :class="{message__green: message.isYou === true}">{{ message.body }}</p>
-          <small>:{{message.username}}</small>
-
-        </div>
-
-        <v-card>
+      <div v-if="ready">
+        <v-card class="message-layout">
+          <v-card-text class="text-end">
+            Людей онлайн: {{connections}}
+          </v-card-text>
+          <small v-if="typing"
+                 class="text-white">{{typing}} is typing</small>
+          <div v-for="message in messages"
+               :key="message"
+               class="message"
+               :class="{message__own: message.isYou === true}">
+            <p class="content message"
+               :class="{message__green: message.isYou === true}">{{ message.body }}</p>
+            <small>:{{message.username}}</small>
+          </div>
           <v-text-field v-model="newMessage"
                         label="Введите сообщение"
                         :rules="rules"
@@ -57,7 +54,7 @@
                    @click="send">Отправить</v-btn>
           </v-card-actions>
         </v-card>
-      </v-card>
+      </div>
       <div v-if="ready">
         <p v-for="user in userInfo"
            :key="user">
@@ -104,7 +101,7 @@ export default Vue.extend({
       value ? this.socket.emit('typing', this.username as string) : this.socket.emit('stopTyping');
     },
   },
-  created() {
+  async created() {
     this.socket.connect();
     this.socket.on('connections', (count: number) => {
       this.connections = count;
@@ -151,26 +148,49 @@ export default Vue.extend({
     window.onbeforeunload = () => {
       this.socket.emit('leave', this.username);
     };
+    try {
+      const response = await fetch('/messages', {
+        method: 'GET',
+      });
+      const mes = await response.json();
+      this.messages.push(...mes);
+    } catch (error: any) {
+      console.error(error.message);
+    }
   },
   methods: {
     addUser() {
       this.ready = true;
       this.socket.emit('joined', this.username);
     },
-    send() {
-      if (this.newMessage !== '') {
+    async send() {
+      const message = this.newMessage;
+      if (message !== '') {
         this.messages.push({
-          body: this.newMessage,
+          body: message,
           isYou: true,
           username: 'Вы',
         } as Message);
 
         this.socket.emit('chat-message', {
-          body: this.newMessage,
+          body: message,
           isYou: false,
           username: this.username,
         } as Message);
-        this.newMessage = '';
+      }
+      this.newMessage = '';
+
+      try {
+        await fetch('/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+          },
+          body: JSON.stringify({ body: message, username: this.username }),
+        });
+      } catch (error: any) {
+        console.log(error.message);
+        throw new Error('Что-то пошло не так');
       }
     },
   },
@@ -196,5 +216,9 @@ export default Vue.extend({
 }
 .message__own {
   text-align: right !important;
+}
+.message-layout {
+  max-height: 82vh;
+  overflow: auto;
 }
 </style>
