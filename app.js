@@ -15,14 +15,11 @@ app.use(express.urlencoded({ extended: true }));
 const server = app.listen(port, () => {
     console.log(`server is running on port ${port}`);
 });
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, 'dist')));
-    app.get('*', (req, res) => {
-        res.sendFile(__dirname + '/dist/index.html');
-    });
-}
-app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/messages', router_1.router);
+app.use(express.static(path.join(__dirname, 'dist')));
+app.get('*', (req, res) => {
+    res.sendFile(__dirname + '/dist/index.html');
+});
 async function start() {
     try {
         await mongoose_1.connect(constants_1.mongoUri);

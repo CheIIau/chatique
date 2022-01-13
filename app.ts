@@ -19,13 +19,10 @@ const server = app.listen(port, () => {
 
 app.use('/messages', router);
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'dist')));
-  app.get('*', (req: unknown, res: any) => {
-    res.sendFile(__dirname + '/dist/index.html');
-  });
-}
 app.use(express.static(path.join(__dirname, 'dist')));
+app.get('*', (req: unknown, res: any) => {
+  res.sendFile(__dirname + '/dist/index.html');
+});
 
 async function start() {
   try {
