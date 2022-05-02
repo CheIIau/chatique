@@ -1,64 +1,81 @@
 <template>
   <v-container>
-    <v-flex md6
-            offset-md3
-            offset-sm3
-            offset-xs1
-            sm6
-            xs10>
+    <v-flex
+      md6
+      offset-md3
+      offset-sm3
+      offset-xs1
+      sm6
+      xs10
+    >
       <div v-if="!ready">
         <h4>Введите свое имя</h4>
         <v-form v-model="valid">
-          <v-text-field v-model="username"
-                        counter
-                        :rules="nameRules"
-                        label="Имя"
-                        required></v-text-field>
-          <v-btn :disabled="!valid"
-                 color="success"
-                 class="mr-4"
-                 @click="addUser">
+          <v-text-field
+            v-model="username"
+            counter
+            :rules="nameRules"
+            label="Имя"
+            required
+          ></v-text-field>
+          <v-btn
+            :disabled="!valid"
+            color="success"
+            class="mr-4"
+            @click="addUser"
+          >
             Войти
           </v-btn>
         </v-form>
       </div>
-      <h2 v-else>Ваше имя: {{username}}</h2>
+      <h2 v-else>Ваше имя: {{ username }}</h2>
       <div v-if="ready">
         <v-card class="message-layout">
           <v-card-text class="text-end">
-            Людей онлайн: {{connections}}
+            Людей онлайн: {{ connections }}
           </v-card-text>
-          <small v-if="typing"
-                 class="text-white">{{typing}} is typing</small>
-          <div v-for="message in messages"
-               :key="message"
-               class="message"
-               :class="{message__own: message.isYou === true}">
-            <p class="content message"
-               :class="{message__green: message.isYou === true}">{{ message.body }}</p>
-            <small>:{{message.username}}</small>
+          <small
+            v-if="typing"
+            class="text-white"
+          >{{ typing }} is typing</small>
+          <div
+            v-for="message in messages"
+            :key="message"
+            class="message"
+            :class="{ message__own: message.isYou === true }"
+          >
+            <p
+              class="content message"
+              :class="{ message__green: message.isYou === true }"
+            >{{ message.body }}</p>
+            <small>:{{ message.username }}</small>
           </div>
-          <v-text-field v-model="newMessage"
-                        label="Введите сообщение"
-                        :rules="rules"
-                        hide-details="auto"
-                        @keyup.enter="send">
+          <v-text-field
+            v-model="newMessage"
+            label="Введите сообщение"
+            hide-details="auto"
+            @keyup.enter="send"
+          >
           </v-text-field>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary"
-                   large
-                   outlined
-                   rounded
-                   text
-                   @click="send">Отправить</v-btn>
+            <v-btn
+              color="primary"
+              large
+              outlined
+              rounded
+              text
+              @click="send"
+            >Отправить</v-btn>
           </v-card-actions>
         </v-card>
       </div>
       <div v-if="ready">
-        <p v-for="user in userInfo"
-           :key="user">
-          {{user.username}} {{user.type}}
+        <p
+          v-for="user in userInfo"
+          :key="user"
+        >
+          {{ user.username }} {{ user.type }}
         </p>
       </div>
     </v-flex>
@@ -197,7 +214,10 @@ export default Vue.extend({
           headers: {
             'Content-Type': 'application/json;charset=utf-8',
           },
-          body: JSON.stringify({ body: message, username: this.username }),
+          body: JSON.stringify({
+            body: message,
+            username: this.username,
+          }),
         });
       } catch (error: any) {
         console.log(error.message);
@@ -218,16 +238,20 @@ export default Vue.extend({
   max-width: 50%;
   word-wrap: break-word;
 }
+
 .message {
   margin-bottom: 3px;
   text-align: left;
 }
+
 .message__green {
   background-color: lightgreen;
 }
+
 .message__own {
   text-align: right !important;
 }
+
 .message-layout {
   max-height: 82vh;
   overflow: auto;

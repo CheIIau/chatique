@@ -6,7 +6,6 @@ router.get('/', async (req, res) => {
   try {
     const links = await Message.find({});
     res.type('json')
-    res.set('Content-Type', 'application/json');
     res.send(links);
   } catch (e) {
     res.status(500).json({ message: 'Что-то пошло не так' });
