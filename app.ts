@@ -4,6 +4,7 @@ import path = require('path');
 import { Server, Socket } from 'socket.io';
 import { router } from './router';
 import { connect } from 'mongoose';
+import 'dotenv/config';
 
 const port = process.env.PORT || 3000;
 app.set('port', port);
